@@ -1,14 +1,11 @@
-import json
-import datetime
+import os
+from ask_sdk.standard import StandardSkillBuilder
+from handlers.launch_request_handler import LaunchRequestHandler
 
+table_name = 'cactus'
+if os.environ.get('AWS_LAMBDA_FUNCTION_VERSION') == '$LATEST':
+    table_name = 'cactus-dev'
+sb = StandardSkillBuilder(table_name=table_name, auto_create_table=True)
+sb.add_request_handler(LaunchRequestHandler())
 
-def handler(event, context):
-    data = {
-        'output': 'Hello World with first change',
-        'timestamp': datetime.datetime.utcnow().isoformat()
-        }
-    return {
-        'statusCode': 200,
-        'body': json.dumps(data),
-        'headers': {'Content-Type': 'application/json'}
-        }
+handler = sb.lambda_handler()
